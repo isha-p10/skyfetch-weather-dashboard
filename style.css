@@ -1,0 +1,21 @@
+body {
+  margin: 0;
+  height: 100vh;
+  font-family: Arial, sans-serif;
+  background: linear-gradient(135deg, #667eea, #764ba2);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  color: white;
+}
+
+.app {
+  text-align: center;
+  background: rgba(0, 0, 0, 0.2);
+  padding: 30px;
+  border-radius: 10px;
+}
+
+#weather img {
+  width: 80px;
+}
