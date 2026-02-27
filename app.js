@@ -6,10 +6,21 @@ document.addEventListener("DOMContentLoaded", function () {
   function WeatherApp() {
     this.apiKey = "f72f4a5097d4e1d8741379a886c58c5e"; // 👈 PUT YOUR API KEY HERE
 
+    this.maxRecentSearches = 5;
+
+  // 2️⃣ App state
+  this.recentSearches = [];
+
     // Store DOM references
     this.weatherDiv = document.getElementById("weather");
     this.cityInput = document.getElementById("city-input");
     this.searchBtn = document.getElementById("search-btn");
+
+    //4️⃣ DOM references (recent searches UI)
+  this.recentSearchesSection =
+    document.getElementById("recent-searches-section");
+  this.recentSearchesContainer =
+    document.getElementById("recent-searches-container");
   }
 
   // =========================
@@ -28,6 +39,8 @@ document.addEventListener("DOMContentLoaded", function () {
         this.handleSearch();
       }
     });
+    this.loadRecentSearches();
+this.loadLastCity();
   };
 
   // =========================
@@ -78,6 +91,7 @@ document.addEventListener("DOMContentLoaded", function () {
     `;
   };
 
+  //this.saveRecentSearch(city);
   // =========================
   // 7️⃣ Get Weather + Forecast
   // =========================
@@ -97,6 +111,7 @@ document.addEventListener("DOMContentLoaded", function () {
       ]);
 
       this.displayWeather(weatherRes.data);
+      this.saveRecentSearch(city);
 
       const dailyForecast =
         this.processForecastData(forecastRes.data.list);
@@ -142,10 +157,46 @@ document.addEventListener("DOMContentLoaded", function () {
     });
   };
 
+WeatherApp.prototype.loadRecentSearches = function () {
+  const saved = localStorage.getItem("recentSearches");
+  if (saved) {
+    this.recentSearches = JSON.parse(saved);
+    this.displayRecentSearches();
+  }
+};
+
+WeatherApp.prototype.saveRecentSearch = function (city) {
+  const cityName =
+    city.charAt(0).toUpperCase() + city.slice(1).toLowerCase();
+
+  const index = this.recentSearches.indexOf(cityName);
+  if (index > -1) this.recentSearches.splice(index, 1);
+
+  this.recentSearches.unshift(cityName);
+
+  if (this.recentSearches.length > this.maxRecentSearches) {
+    this.recentSearches.pop();
+  }
+
+  localStorage.setItem(
+    "recentSearches",
+    JSON.stringify(this.recentSearches)
+  );
+
+  localStorage.setItem("lastCity", cityName);
+  this.displayRecentSearches();
+};
+
+WeatherApp.prototype.loadLastCity = function () {
+  const lastCity = localStorage.getItem("lastCity");
+  if (lastCity) {
+    this.getWeather(lastCity);
+  }
+};
   // =========================
   // 🔟 Create App Instance
   // =========================
   const app = new WeatherApp();
   app.init();
-
+  
 });
